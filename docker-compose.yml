@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # API Gateway
+  # API Gateway v2.0
   api-gateway:
     build: ./gateway
     ports:
@@ -12,11 +12,17 @@ services:
       - AUTH_SERVICE_URL=http://auth-service:3001
       - PRODUCT_SERVICE_URL=http://product-service:3002
       - CORS_ORIGIN=http://localhost:3000
+      - JWT_SECRET=your-super-secret-jwt-key-here
+      - RATE_LIMIT_WINDOW_MS=900000
+      - RATE_LIMIT_MAX_REQUESTS=100
+      - PROXY_TIMEOUT=15000
+      - LOG_LEVEL=debug
     depends_on:
       - auth-service
       - product-service
     networks:
       - microservices-network
+    restart: unless-stopped
 
   # Auth Service
   auth-service:
@@ -28,6 +34,7 @@ services:
       - PORT=3001
       - MONGO_URI=mongodb://mongodb:27017/auth_service
       - JWT_SECRET=your-super-secret-jwt-key-here
+      - KAFKA_BROKER=localhost:9092
     depends_on:
       - mongodb
     networks:
@@ -42,10 +49,14 @@ services:
       - NODE_ENV=development
       - PORT=3002
       - MONGO_URI=mongodb://mongodb:27017/product_service
+      - JWT_SECRET=your-super-secret-jwt-key-here
     depends_on:
       - mongodb
     networks:
       - microservices-network
+    restart: unless-stopped
+
+  # Using existing Kafka services (external)
 
   # MongoDB Database
   mongodb:

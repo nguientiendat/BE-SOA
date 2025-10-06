@@ -14,6 +14,8 @@ const { AUTH_SUCCESS, AUTH_ERRORS } = require(path.join(
 ));
 const User = require("../models/user.model");
 
+const { sendUserRegisteredEvent } = require("../../kafka/provider");
+
 // Đăng ký tài khoản mới
 const register = async (req, res) => {
   try {
@@ -55,6 +57,17 @@ const register = async (req, res) => {
     // Lưu user vào database
     const savedUser = await newUser.save();
 
+    // Gửi event lên Kafka (không block response nếu Kafka fail)
+    try {
+      await sendUserRegisteredEvent(savedUser);
+    } catch (kafkaError) {
+      console.error(
+        "⚠️ [KAFKA] Failed to send user registration event:",
+        kafkaError.message
+      );
+      // Không throw error để không ảnh hưởng đến user registration
+    }
+
     // Tạo JWT token
     const token = generateToken(
       {
@@ -73,7 +86,6 @@ const register = async (req, res) => {
         id: savedUser._id,
         username: savedUser.username,
         email: savedUser.email,
-        role: savedUser.role,
       },
       token,
     });

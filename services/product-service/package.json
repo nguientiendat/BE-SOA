@@ -1,21 +1,29 @@
 {
   "name": "product-service",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/index.js",
     "start": "node src/index.js"
   },
-  "keywords": [],
+  "keywords": ["product-service", "microservices", "express", "mongoose"],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Product service for microservices architecture",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "mongoose": "^8.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^3.0.2"
+  },
+  "devDependencies": {
     "nodemon": "^3.1.10"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   }
 }

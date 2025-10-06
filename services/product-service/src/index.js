@@ -31,6 +31,28 @@ app.get("/health", (req, res) => {
 
 app.use("/", productRouter);
 
+// 404 handler (phải đặt sau hết)
+app.use((req, res) => {
+  console.log(`[PRODUCT-SERVICE] 404: ${req.method} ${req.path}`);
+  res.status(404).json({
+    success: false,
+    message: "Endpoint không tồn tại",
+  });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error("Global error handler:", err);
+  res.status(500).json({
+    success: false,
+    message: "Lỗi server nội bộ",
+    error:
+      process.env.NODE_ENV === "development"
+        ? err.message
+        : "Something went wrong",
+  });
+});
+
 const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {
   console.log(`Product Service is running on port ${PORT}`);

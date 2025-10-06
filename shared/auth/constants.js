@@ -8,7 +8,7 @@ const JWT_CONFIG = {
 
 // User Roles
 const USER_ROLES = {
-  ADMIN: "admin",
+  ADMIN: "ADMIN",
   USER: "user",
   MODERATOR: "moderator",
   SELLER: "seller",
@@ -66,5 +66,3 @@ module.exports = {
   AUTH_SUCCESS,
   HTTP_STATUS,
 };
-
-
