@@ -15,9 +15,11 @@
   "license": "ISC",
   "description": "Cart service for microservices architecture",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "kafkajs": "^2.2.4",
     "mongoose": "^8.19.0"
   }
 }
+

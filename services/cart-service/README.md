@@ -72,3 +72,4 @@ MONGO_URI=mongodb://mongodb:27017/cart_service
 JWT_SECRET=your-super-secret-jwt-key-here
 ```
 
+

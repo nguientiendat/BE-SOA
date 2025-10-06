@@ -1,5 +1,3 @@
-// Cart model
-// TODO: Define cart schema and model
 const mongoose = require("mongoose");
 const cartItemSchema = new mongoose.Schema({
   productId: {
@@ -35,3 +33,4 @@ const cartSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("Cart", cartSchema);
+

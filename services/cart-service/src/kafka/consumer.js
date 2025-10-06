@@ -17,10 +17,20 @@ async function runConsumer() {
   });
 
   await consumer.run({
-    eachMesaage: async ({ topic, partition, message }) => {
+    eachMessage: async ({ topic, partition, message }) => {
       try {
         const user = JSON.parse(message.value.toString());
         console.log(`📥 [KAFKA] New user registered: ${user.email}`);
+
+        // Tạo cart cho user mới
+        const newCart = new Cart({
+          _id: user.id,
+          items: [],
+          totalPrice: 0,
+        });
+
+        await newCart.save();
+        console.log(`🛒 [CART] Cart created for user: ${user.email}`);
       } catch (err) {
         console.error("❌ [KAFKA] Error processing message:", err.message);
       }
