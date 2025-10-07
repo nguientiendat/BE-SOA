@@ -9,11 +9,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT || 3004;
+
+app.get("/health", (req, res) => {
+  res.status(200).send("Payment Service is healthy");
+});
 
 mongoose
   .connect(
-    process.env.MONGO_URI || "mongodb://localhost:27017/cart_service",
+    process.env.MONGO_URI || "mongodb://localhost:27017/payment_service",
     {}
   )
   .then(() => console.log("MongoDB connected"))
@@ -21,13 +25,7 @@ mongoose
 
 runConsumer();
 
-app.get("/health", (req, res) => {
-  res.status(200).send("Cart Service is healthy");
-});
-
-const cartRoutes = require("./routes/cart.routes");
-app.use("/", cartRoutes);
-
 app.listen(PORT, () => {
-  console.log(`Cart Service is running on port ${PORT}`);
+  console.log(`Payment Service is running on port ${PORT}`);
 });
+
