@@ -26,13 +26,15 @@ const authMiddleware = async (req, res, next) => {
     );
 
     // Add user info to request object
+    // Ensure userId is available as both `userId` and `id` for compatibility
     req.user = {
       userId: decoded.userId,
+      id: decoded.userId,
       username: decoded.username,
       role: decoded.role,
       email: decoded.email,
     };
-
+    console.log("Decoded user:", req.user);
     next();
   } catch (error) {
     console.error("Auth middleware error:", error);

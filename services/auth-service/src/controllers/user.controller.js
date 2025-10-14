@@ -76,7 +76,7 @@ const register = async (req, res) => {
         role: savedUser.role,
         email: savedUser.email,
       },
-      process.env.JWT_SECRET || "your-secret-key",
+      process.env.JWT_SECRET || "your-super-secret-jwt-key-here",
       "24h"
     );
 
@@ -130,7 +130,7 @@ const login = async (req, res) => {
         role: user.role,
         email: user.email,
       },
-      process.env.JWT_SECRET || "your-secret-key",
+      process.env.JWT_SECRET || "your-super-secret-jwt-key-here",
       "24h"
     );
 

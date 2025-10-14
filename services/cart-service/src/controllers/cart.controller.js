@@ -22,8 +22,8 @@ const createCart = async (userId) => {
 
 const addToCart = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const { productId } = req.body;
+  const userId = req.user && (req.user.userId || req.user.id);
+    const { productId, quantity, price } = req.body;
 
     // Kiểm tra sản phẩm tồn tại (qua ProductService hoặc DB)
     // const product = await Product.findById(productId);
@@ -32,10 +32,12 @@ const addToCart = async (req, res) => {
     // }
 
     // Tìm giỏ hàng của user
-    let cart = await Cart.findOne({ userId });
+    // The Cart schema uses _id as the user's identifier, so query by _id
+    let cart = await Cart.findOne({ _id: String(userId) });
     console.log(cart);
     if (!cart) {
-      cart = new Cart({ userId, items: [] });
+      // Create a new cart where _id is the userId (schema expects _id: String)
+      cart = new Cart({ _id: String(userId), items: [] });
     }
 
     // Kiểm tra xem sản phẩm đã có trong giỏ chưa
@@ -45,24 +47,16 @@ const addToCart = async (req, res) => {
     if (existingItem) {
       return res.status(400).json({ message: "Product already in cart" });
     }
+    console.log("userIDDDDDD: :", userId);
 
     // Thêm sản phẩm mới
     cart.items.push({
       productId,
-      quantity: 1,
-      price: 199000,
+      quantity,
+      price,
     });
 
     await cart.save();
-
-    // (Tuỳ chọn) Publish event lên Kafka
-    // publishToKafka("cart.events", {
-    //   eventType: "CartItemAdded",
-    //   userId,
-    //   cartId: cart._id,
-    //   productId,
-    //   quantity: 1,
-    // });
 
     console.log("✅ Thêm sản phẩm thành công");
     res.status(200).json(cart);
@@ -72,21 +66,22 @@ const addToCart = async (req, res) => {
   }
 };
 
-const removeFromCart = async (userId, productId) => {};
-
 const getCart = async (req, res) => {
   try {
-    const cart = await Cart.findById(req.params.userId);
+  const userId = req.user && (req.user.userId || req.user.id);
+  // Cart documents are stored with _id equal to userId
+  const cart = await Cart.findOne({ _id: String(userId) });
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
+    console.log("userIDDDDDD: :", userId);
     res.json(cart);
   } catch (error) {
     console.error("Error getting cart:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
+const removeFromCart = async (userId, productId) => {};
 module.exports = {
   createCart,
   getCart,
