@@ -1,7 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const { runConsumer } = require("./kafka/consumer.js");
 
 require("dotenv").config();
 
@@ -23,9 +22,8 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log(err));
 
-// runConsumer();
+app.use("/", require("./routes/order.routes"));
 
 app.listen(PORT, () => {
   console.log(`Order Service is running on port ${PORT}`);
 });
-
