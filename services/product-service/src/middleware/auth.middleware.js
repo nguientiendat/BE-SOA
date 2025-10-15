@@ -5,7 +5,7 @@ const {
 } = require(path.join(__dirname, "../../../../shared/auth/auth.middleware.js"));
 
 // Admin-only middleware
-const adminOnly = authorizeRoles("admin");
+const adminOnly = authorizeRoles("ADMIN");
 
 // Auth middleware that includes admin check
 const authMiddleware = async (req, res, next) => {
