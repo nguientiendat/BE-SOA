@@ -76,8 +76,10 @@ const removeFromCart = async (userId, productId) => {};
 
 const getCart = async (req, res) => {
   try {
-    const cart = await Cart.findById(req.params.userId);
+    const cart = await Cart.findById(req.user.userId);
     if (!cart) {
+      console.log(req.user);
+      console.log(req.user.userId);
       return res.status(404).json({ message: "Cart not found" });
     }
     res.json(cart);

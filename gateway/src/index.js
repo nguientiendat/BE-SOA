@@ -3,6 +3,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const { createProxyMiddleware } = require("http-proxy-middleware");
+const { authMiddleware } = require("../../shared/auth/auth.middleware");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -31,6 +32,7 @@ app.use(
 );
 app.use(
   "/api/products",
+  // authMiddleware,
   createProxyMiddleware({
     target: "http://localhost:3002",
     changeOrigin: true,
@@ -39,14 +41,6 @@ app.use(
     },
   })
 );
-
-// 404 handler
-// app.use("*", (req, res) => {
-//   res.status(404).json({
-//     message: "Route not found",
-//     status: "error",
-//   });
-// });
 
 // Start server
 app.listen(PORT, () => {

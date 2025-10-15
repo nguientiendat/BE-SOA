@@ -4,7 +4,7 @@ const {
   getProducts,
   getProductById,
 } = require("../controllers/product.controller");
-const { authMiddleware, adminOnly } = require("../middleware/auth.middleware");
+const { authMiddleware } = require("../middleware/auth.middleware");
 
 const router = express.Router();
 
@@ -14,6 +14,6 @@ router.get("/:id", getProductById);
 
 // Protected routes (cần authentication)
 // Chỉ ADMIN mới có thể thêm sản phẩm
-router.post("/addproduct", authMiddleware, adminOnly, addProduct);
+router.post("/addproduct", authMiddleware, addProduct);
 
 module.exports = router;
