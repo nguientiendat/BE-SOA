@@ -14,6 +14,8 @@ const PORT = process.env.PORT || 3004;
 app.get("/health", (req, res) => {
   res.status(200).send("Payment Service is healthy");
 });
+const paymentRoutes = require("./routes/payment.routes");
+app.use("/", paymentRoutes);
 
 mongoose
   .connect(
@@ -24,8 +26,6 @@ mongoose
   .catch((err) => console.log(err));
 
 runConsumer();
-
 app.listen(PORT, () => {
   console.log(`Payment Service is running on port ${PORT}`);
 });
-

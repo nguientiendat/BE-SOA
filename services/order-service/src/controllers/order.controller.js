@@ -2,6 +2,7 @@
 const Order = require("../models/order.model");
 const axios = require("axios");
 const mongoose = require("mongoose");
+const { sendOrderCreatedEvent } = require("../kafka/producer");
 const createOrder = async (req, res) => {
   try {
     const token = req.headers.authorization;
@@ -15,14 +16,20 @@ const createOrder = async (req, res) => {
     if (!cartData.data.items || cartData.data.items.length === 0) {
       return res.status(400).json({ message: "Cart is empty" });
     }
+
+    const totalAmount = cartData.data.items.reduce((total, item) => {
+      return total + item.price * item.quantity;
+    }, 0);
+    console.log("Total amount1111:", totalAmount);
     const newOrder = new Order({
       email: req.user.email,
       items: cartData.data.items,
       paymenStatus: "PENDING",
       orderStatus: "CREATED",
-      totalAmount: 0,
+      totalPrice: totalAmount,
     });
     newOrder.save();
+    sendOrderCreatedEvent(newOrder);
     res
       .status(201)
       .json({ message: "DB Order created successfully", order: newOrder });
