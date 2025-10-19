@@ -1,12 +1,9 @@
-// ✅ BƯỚC 1: ĐẶT LÊN TRÊN CÙNG!
-// Đảm bảo đây là dòng code đầu tiên được thực thi.
 const dotenv = require("dotenv");
 dotenv.config();
 console.log("--- STARTING ENV TEST ---");
 console.log("PAYOS_CLIENT_ID loaded:", process.env.PAYOS_CLIENT_ID);
 console.log("--- ENDING ENV TEST ---");
 
-// ✅ BƯỚE 2: BÂY GIỜ MỚI REQUIRE CÁC FILE KHÁC
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");

@@ -53,7 +53,6 @@ async function runConsumer() {
           returnUrl: `${YOUR_DOMAIN}/payment-success`,
           cancelUrl: `${YOUR_DOMAIN}/payment-cancelled`,
         };
-        // ✅ BƯỚC 3: Gọi PayOS để tạo link thanh toán
         console.log(
           `[PAYOS] Creating payment link for order: ${order.orderCode}`
         );
@@ -62,14 +61,13 @@ async function runConsumer() {
         );
         console.log(`[PAYOS] Response:`, paymentLinkResponse);
 
-        // ✅ BƯỚC 4: Cập nhật lại bản ghi payment với thông tin từ PayOS
         newPayment.status = "PENDING";
         newPayment.transactionId = paymentLinkResponse.paymentLinkId; // Hoặc một ID phù hợp từ PayOS
         // newPayment.paymentUrl = paymentLinkResponse.checkoutUrl;
         await newPayment.save();
 
         console.log(
-          `✅ [SUCCESS] Successfully processed order: ${order.orderCode}`
+          `[SUCCESS] Successfully processed order: ${order.orderCode}`
         );
       } catch (err) {
         console.error("❌ [KAFKA] Error processing message:", err.message);
