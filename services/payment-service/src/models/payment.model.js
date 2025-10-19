@@ -12,8 +12,10 @@ const paymentSchema = new mongoose.Schema(
     },
     transactionId: {
       type: String,
-      unique: true,
-      sparse: true,
+
+      //*********Sau này thêm vào****************
+      // unique: true,
+      // sparse: true,
     },
     amount: {
       type: Number,
