@@ -1,9 +1,13 @@
+const dotenv = require("dotenv");
+dotenv.config();
+console.log("--- STARTING ENV TEST ---");
+console.log("PAYOS_CLIENT_ID loaded:", process.env.PAYOS_CLIENT_ID);
+console.log("--- ENDING ENV TEST ---");
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const { runConsumer } = require("./kafka/consumer.js");
-
-require("dotenv").config();
+const { runConsumer } = require("./kafka/consumer.js"); // Bây giờ consumer sẽ thấy các biến env
 
 const app = express();
 app.use(cors());
@@ -14,6 +18,8 @@ const PORT = process.env.PORT || 3004;
 app.get("/health", (req, res) => {
   res.status(200).send("Payment Service is healthy");
 });
+const paymentRoutes = require("./routes/payment.routes");
+app.use("/", paymentRoutes);
 
 mongoose
   .connect(
@@ -23,9 +29,7 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log(err));
 
-runConsumer();
-
 app.listen(PORT, () => {
   console.log(`Payment Service is running on port ${PORT}`);
+  runConsumer();
 });
-
