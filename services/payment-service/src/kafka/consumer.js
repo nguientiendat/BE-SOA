@@ -1,5 +1,6 @@
 // Kafka consumer - to be implemented
 const dotenv = require("dotenv");
+
 dotenv.config();
 const { Kafka } = require("kafkajs");
 const { PayOS } = require("@payos/node");
@@ -19,7 +20,7 @@ const payOS = new PayOS(
   // process.env.Checksum_Key
   process.env.PAYOS_CHECKSUM_KEY
 );
-async function runConsumer() {
+async function runConsumer(req, res) {
   await consumer.connect();
   console.log("📥 [KAFKA] Consumer connected successfully");
   await consumer.subscribe({
@@ -35,18 +36,22 @@ async function runConsumer() {
           `💰 [PAYMENT] Processing payment for order: ${order.orderCode}`
         );
         const newPayment = new Payment({
-          orderId: order.orderCode,
+          orderId: order.orderId,
           email: order.email,
           amount: order.amount,
           //   transactionId: "",
           status: "PENDING",
+          orderCode: order.orderCode,
+          counterAccountNumber: null,
+          paymentLinkId: null,
+          items: order.items,
         });
         await newPayment.save();
         console.log(`Them vao DB thanh cong`);
 
-        const YOUR_DOMAIN = "http://localhost:3000"; // Thay bằng domain của bạn
+        const YOUR_DOMAIN = "http://localhost:3004"; // Thay bằng domain của bạn
         const paymentData = {
-          orderCode: Number(String(Date.now()).slice(-6)), // Dùng orderCode từ message, không tạo mới!
+          orderCode: order.orderCode,
           amount: order.amount,
           description: `Test PayOS`,
           // items: order.items, // Lấy item từ message nếu có

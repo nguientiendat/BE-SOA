@@ -6,6 +6,10 @@ const paymentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
+    orderCode: {
+      type: String,
+      required: true,
+    },
     email: {
       type: String,
       required: true,
@@ -26,6 +30,14 @@ const paymentSchema = new mongoose.Schema(
       required: true,
       enum: ["PENDING", "SUCCESS", "FAILED"],
       default: "PENDING",
+    },
+    counterAccountNumber: {
+      type: String,
+      default: null,
+    },
+    paymentLinkId: {
+      type: String,
+      default: null,
     },
   },
   { timestamps: true }
