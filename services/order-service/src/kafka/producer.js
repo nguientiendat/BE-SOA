@@ -17,10 +17,12 @@ async function sendOrderCreatedEvent(order) {
         {
           key: order._id.toString(),
           value: JSON.stringify({
-            orderCode: order._id,
+            orderId: order._id,
+            orderCode: order.orderCode,
             amount: order.totalPrice,
             description: `Thanh toán cho mã đơn hàng ${order._id}`,
             email: order.email,
+            items: order.items,
           }),
         },
       ],
