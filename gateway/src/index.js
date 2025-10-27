@@ -41,6 +41,26 @@ app.use(
     },
   })
 );
+app.use(
+  "/api/carts",
+  createProxyMiddleware({
+    target: "http://localhost:3003",
+    changeOrigin: true,
+    pathRewrite: {
+      "^/api/cart": "",
+    },
+  })
+);
+app.use(
+  "api/orders",
+  createProxyMiddleware({
+    target: "http://localhost:3005",
+    changeOrigin: true,
+    pathRewrite: {
+      "^/api/orders": "",
+    },
+  })
+);
 
 // Start server
 app.listen(PORT, () => {
