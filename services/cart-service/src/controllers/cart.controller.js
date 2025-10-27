@@ -50,7 +50,7 @@ const addToCart = async (req, res) => {
     cart.items.push({
       productId,
       quantity: 1,
-      price: 199000,
+      price: 5000,
     });
 
     await cart.save();
@@ -77,6 +77,7 @@ const removeFromCart = async (userId, productId) => {};
 const getCart = async (req, res) => {
   try {
     const cart = await Cart.findById(req.user.userId);
+    console.log(cart);
     if (!cart) {
       console.log(req.user);
       console.log(req.user.userId);

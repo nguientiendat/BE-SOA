@@ -2,7 +2,7 @@
 const mongoose = require("mongoose");
 
 const orderItems = new mongoose.Schema({
-  productId: {
+  _id: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
@@ -35,6 +35,10 @@ const orderSchema = new mongoose.Schema({
     type: String,
     enum: ["CREATED", "PROCESSING", "COMPLETED", "CANCELLED"],
     default: "CREATED",
+  },
+  orderCode: {
+    type: String,
+    required: true,
   },
   createdAt: {
     type: Date,

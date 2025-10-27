@@ -6,13 +6,13 @@ const { sendOrderCreatedEvent } = require("../kafka/producer");
 const createOrder = async (req, res) => {
   try {
     const token = req.headers.authorization;
-    console.log("Token:", token);
+    // console.log("Token:", token);
 
     const cartData = await axios.get(`http://localhost:3003/getcart`, {
-      headers: { Authorization: token }, // ✅ phải là headers
+      headers: { Authorization: token },
     });
 
-    console.log("Cart data:", cartData.data);
+    // console.log("Cart data:", cartData.data);
     if (!cartData.data.items || cartData.data.items.length === 0) {
       return res.status(400).json({ message: "Cart is empty" });
     }
@@ -20,16 +20,23 @@ const createOrder = async (req, res) => {
     const totalAmount = cartData.data.items.reduce((total, item) => {
       return total + item.price * item.quantity;
     }, 0);
-    console.log("Total amount1111:", totalAmount);
-    const newOrder = new Order({
+    const orderCode = Date.now();
+    const newOrder = await new Order({
       email: req.user.email,
       items: cartData.data.items,
-      paymenStatus: "PENDING",
+      paymentStatus: "PENDING",
       orderStatus: "CREATED",
       totalPrice: totalAmount,
+      orderCode: orderCode.toString(),
+      // _id: cartData.data._id,
     });
-    newOrder.save();
-    sendOrderCreatedEvent(newOrder);
+    const saveDb = await newOrder.save();
+    console.log("New order created:", newOrder);
+
+    const eventData = saveDb.toObject();
+    eventData.orderCode = orderCode;
+    sendOrderCreatedEvent(eventData);
+    console.log("order sended to kafka");
     res
       .status(201)
       .json({ message: "DB Order created successfully", order: newOrder });
@@ -38,4 +45,5 @@ const createOrder = async (req, res) => {
     res.status(500).json({ message: "Failed to get cart data" });
   }
 };
+
 module.exports = { createOrder };
