@@ -1,11 +1,10 @@
-const express = require('express');
-const app = express();
-const port = process.env.PORT || 3001;
+// Tải các biến môi trường (như API key) LÊN TRƯỚC TIÊN
+require("dotenv").config();
 
-app.get('/', (req, res) => {
-  res.send('Hello from email-service!');
-});
+const { runConsumer } = require("../kafka/consumer");
 
-app.listen(port, () => {
-  console.log(`email-service listening at http://localhost:${port}`);
-});
+console.log("🚀 Đang khởi động Email Service...");
+
+// Khởi động consumer
+// Nó sẽ kết nối Kafka và bắt đầu lắng nghe
+runConsumer();

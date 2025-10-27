@@ -1,5 +1,6 @@
 // Payment controller - to be implemented
 const Payment = require("../models/payment.model");
+const { sendPaymentSuccessfulEvent } = require("../kafka/producer");
 
 const createPayment = async (req, res) => {
   try {
@@ -49,6 +50,14 @@ const paymentCancelled = async (req, res) => {
     console.log(
       `Cập nhật trạng thái thanh toán thành công cho orderCode: ${orderCodeNum}`
     );
+    const paymentDoc = await Payment.findOne(filter);
+    const paymentMessage = {
+      email: paymentDoc.email,
+      amount: data.amount,
+      orderCode: orderCodeNum.toString(),
+      status: updateStatus,
+    };
+    sendPaymentSuccessfulEvent(paymentMessage);
 
     return res
       .status(200)
