@@ -2,7 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { start } = require("../jobs/cancelExpiredOrders"); // Đảm bảo đường dẫn đúng
-
+const { runConsumer } = require("./kafka/consumer");
+const { runProducer } = require("./kafka/producer");
 require("dotenv").config();
 
 const app = express();
@@ -17,24 +18,27 @@ app.get("/health", (req, res) => {
 
 app.use("/", require("./routes/order.routes"));
 
-// KẾT NỐI DB TRƯỚC
-mongoose
-  .connect(
-    process.env.MONGO_URI || "mongodb://localhost:27017/order_service",
-    {}
-  )
-  .then(() => {
-    console.log("✅ MongoDB đã kết nối");
+const startServer = async () => {
+  try {
+    await mongoose.connect(
+      process.env.MONGO_URI || "mongodb://localhost:27017/order_service",
+      {}
+    );
+    console.log(" MongoDB đã kết nối");
 
-    // SAU KHI KẾT NỐI DB THÀNH CÔNG, MỚI KHỞI ĐỘNG SERVER
+    await runProducer();
+
+    await runConsumer();
+
     app.listen(PORT, () => {
-      console.log(`✅ Order Service đang chạy trên cổng ${PORT}`);
+      console.log(` Order Service đang chạy trên cổng ${PORT}`);
 
-      // SAU KHI SERVER CHẠY, MỚI KHỞI ĐỘNG CRON JOB
       start();
     });
-  })
-  .catch((err) => {
-    console.error("❌ Không thể kết nối MongoDB:", err);
-    process.exit(1); // Dừng ứng dụng nếu không kết nối được DB
-  });
+  } catch (err) {
+    console.error("❌ Không thể khởi động dịch vụ:", err);
+    process.exit(1); // Dừng ứng dụng nếu có bất kỳ lỗi nào
+  }
+};
+
+startServer();

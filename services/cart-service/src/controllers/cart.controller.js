@@ -23,6 +23,7 @@ const createCart = async (userId) => {
 const addToCart = async (req, res) => {
   try {
     const userId = req.user.id;
+    console.log(userId);
     const { productId } = req.body;
 
     // Kiểm tra sản phẩm tồn tại (qua ProductService hoặc DB)
@@ -37,13 +38,15 @@ const addToCart = async (req, res) => {
     if (!cart) {
       cart = new Cart({ userId, items: [] });
     }
-
+    console.log(cart.item);
     // Kiểm tra xem sản phẩm đã có trong giỏ chưa
-    const existingItem = cart.items.find((item) =>
-      item.productId.equals(productId)
-    );
-    if (existingItem) {
-      return res.status(400).json({ message: "Product already in cart" });
+    if (cart.item) {
+      const existingItem = cart.items.find((item) =>
+        item.productId.equals(productId)
+      );
+      if (existingItem) {
+        return res.status(400).json({ message: "Product already in cart" });
+      }
     }
 
     // Thêm sản phẩm mới
