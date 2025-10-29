@@ -11,7 +11,7 @@ const requestLogger = (req, res, next) => {
   req.id = Math.random().toString(36).substr(2, 9);
 
   // Log request start
-  console.log(`\n📥 [${req.id}] ${req.method} ${req.path}`);
+  console.log(`\n [${req.id}] ${req.method} ${req.path}`);
   console.log(`   IP: ${req.ip}`);
   console.log(`   User-Agent: ${req.get("User-Agent")}`);
   console.log(`   Content-Type: ${req.get("Content-Type")}`);
@@ -65,5 +65,3 @@ module.exports = {
   requestLogger,
   morganLogger,
 };
-
-

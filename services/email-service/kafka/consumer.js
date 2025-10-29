@@ -18,14 +18,14 @@ const runConsumer = async () => {
   try {
     // 1. Kết nối consumer
     await consumer.connect();
-    console.log("✅ [KAFKA] Consumer (email-svc) đã kết nối.");
+    console.log(" [KAFKA] Consumer (email-svc) đã kết nối.");
 
     // 2. Đăng ký (Subscribe) topic
     await consumer.subscribe({
       topic: "PAYMENT-SUCCESSFUL-EVENT",
       fromBeginning: true,
     });
-    console.log("✅ [KAFKA] Đã đăng ký topic 'PAYMENT-SUCCESSFUL-EVENT'.");
+    console.log(" [KAFKA] Đã đăng ký topic 'PAYMENT-SUCCESSFUL-EVENT'.");
 
     // 3. Chạy consumer để lắng nghe
     await consumer.run({

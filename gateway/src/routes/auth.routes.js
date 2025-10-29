@@ -72,7 +72,7 @@
 //    */
 //   onProxyRes: (proxyRes, req, res) => {
 //     console.log(
-//       `✅ [AUTH-PROXY] Response: ${proxyRes.statusCode} for ${req.path}`
+//       ` [AUTH-PROXY] Response: ${proxyRes.statusCode} for ${req.path}`
 //     );
 
 //     // Add CORS headers

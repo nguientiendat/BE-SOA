@@ -1,6 +1,5 @@
 const dotenv = require("dotenv");
 dotenv.config();
-// ... (các log test env của bạn) ...
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -19,36 +18,30 @@ app.get("/health", (req, res) => {
 const paymentRoutes = require("./routes/payment.routes");
 app.use("/", paymentRoutes);
 
-// BẮT ĐẦU CHUỖI KHỞI ĐỘNG (SEQUENTIAL STARTUP)
 console.log("Đang khởi động service...");
 
-// BƯỚC 1: Kết nối MongoDB
 mongoose
   .connect(
     process.env.MONGO_URI || "mongodb://localhost:27017/payment_service",
     {}
   )
   .then(() => {
-    console.log("✅ MongoDB đã kết nối");
-    // BƯỚC 2: Kết nối Kafka Producer
+    console.log(" MongoDB đã kết nối");
     return connectProducer(); // Trả về promise
   })
   .then(() => {
-    console.log("✅ Kafka Producer đã kết nối");
-    // BƯỚC 3: Kết nối Kafka Consumer
-    // (Giả sử runConsumer() cũng trả về một promise khi nó connect xong)
+    console.log(" Kafka Producer đã kết nối");
+
     return runConsumer();
   })
   .then(() => {
-    console.log("✅ Kafka Consumer đã kết nối và đang lắng nghe");
-    // BƯỚC 4: (CUỐI CÙNG) Khởi động Server
-    // Giờ đây server 100% sẵn sàng
+    console.log(" Kafka Consumer đã kết nối và đang lắng nghe");
+
     app.listen(PORT, () => {
       console.log(`🚀 Payment Service đã SẴN SÀNG trên cổng ${PORT}`);
     });
   })
   .catch((err) => {
-    // Nếu BẤT KỲ bước nào ở trên thất bại, dừng app
     console.error("❌ Lỗi nghiêm trọng khi khởi động:", err);
     process.exit(1);
   });

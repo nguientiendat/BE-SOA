@@ -22,7 +22,7 @@ const payOS = new PayOS(
 );
 async function runConsumer(req, res) {
   await consumer.connect();
-  console.log("📥 [KAFKA] Consumer connected successfully");
+  console.log(" [KAFKA] Consumer connected successfully");
   await consumer.subscribe({
     topic: "ORDER-CREATED",
     fromBeginning: true,
@@ -31,7 +31,7 @@ async function runConsumer(req, res) {
     eachMessage: async ({ topic, partition, message }) => {
       try {
         const order = JSON.parse(message.value.toString());
-        console.log(`📥 [KAFKA] Order created: ${order.orderCode}`);
+        console.log(` [KAFKA] Order created: ${order.orderCode}`);
         console.log(
           `💰 [PAYMENT] Processing payment for order: ${order.orderCode}`
         );

@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use((req, res, next) => {
-  console.log(`\n📥 [PRODUCT-SERVICE] ${req.method} ${req.path}`);
+  console.log(`\n [PRODUCT-SERVICE] ${req.method} ${req.path}`);
   console.log(`   Headers:`, req.headers);
   // console.log(`   Body:`, req.body ? JSON.stringify(req.body, null, 2) : "No body");
   next();

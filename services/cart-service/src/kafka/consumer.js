@@ -9,7 +9,7 @@ const consumer = kafka.consumer({ groupId: "cart-service-group" });
 
 async function runConsumer() {
   await consumer.connect();
-  console.log("📥 [KAFKA] Consumer connected successfully");
+  console.log(" [KAFKA] Consumer connected successfully");
 
   await consumer.subscribe({
     topic: "sign-up-successful",
@@ -20,7 +20,7 @@ async function runConsumer() {
     eachMessage: async ({ topic, partition, message }) => {
       try {
         const user = JSON.parse(message.value.toString());
-        console.log(`📥 [KAFKA] New user registered: ${user.email}`);
+        console.log(` [KAFKA] New user registered: ${user.email}`);
 
         // Tạo cart cho user mới
         const newCart = new Cart({

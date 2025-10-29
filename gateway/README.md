@@ -4,15 +4,15 @@ API Gateway cho kiến trúc microservices với validation và error handling n
 
 ## Tính năng
 
-- ✅ Proxy requests đến auth-service và product-service
-- ✅ Request validation với schema
-- ✅ Error handling toàn diện
-- ✅ Request logging và monitoring
-- ✅ Rate limiting
-- ✅ CORS configuration
-- ✅ Security headers với Helmet
-- ✅ Health check endpoints
-- ✅ Graceful shutdown
+- Proxy requests đến auth-service và product-service
+- Request validation với schema
+- Error handling toàn diện
+- Request logging và monitoring
+- Rate limiting
+- CORS configuration
+- Security headers với Helmet
+- Health check endpoints
+- Graceful shutdown
 
 ## Cấu trúc
 
@@ -144,5 +144,3 @@ Gateway log tất cả requests và responses:
 - Rate limiting
 - Request validation
 - Input sanitization
-
-

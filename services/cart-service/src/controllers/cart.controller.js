@@ -53,7 +53,7 @@ const addToCart = async (req, res) => {
     cart.items.push({
       productId,
       quantity: 1,
-      price: 5000,
+      price: 3000,
     });
 
     await cart.save();
@@ -67,7 +67,7 @@ const addToCart = async (req, res) => {
     //   quantity: 1,
     // });
 
-    console.log("✅ Thêm sản phẩm thành công");
+    console.log(" Thêm sản phẩm thành công");
     res.status(200).json(cart);
   } catch (error) {
     console.error("❌ Lỗi thêm giỏ hàng:", error);

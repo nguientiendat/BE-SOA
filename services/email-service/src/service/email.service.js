@@ -29,7 +29,7 @@ const sendThankYouEmail = async (paymentData) => {
   // 4. Gửi mail
   try {
     await client.send(message);
-    console.log(`[Email] ✅ Gửi mail thành công tới ${email}`);
+    console.log(`[Email]  Gửi mail thành công tới ${email}`);
   } catch (error) {
     console.error(`❌ [Email] Lỗi khi gửi mail tới ${email}:`, error.message);
     if (error.response) {

@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 // Request logging middleware
 app.use((req, res, next) => {
-  console.log(`\n📥 [AUTH-SERVICE] ${req.method} ${req.path}`);
+  console.log(`\n [AUTH-SERVICE] ${req.method} ${req.path}`);
   console.log(`   Headers:`, req.headers);
   console.log(
     `   Body:`,

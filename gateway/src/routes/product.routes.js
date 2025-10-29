@@ -69,7 +69,7 @@
 //    */
 //   onProxyRes: (proxyRes, req, res) => {
 //     console.log(
-//       `✅ [PRODUCT-PROXY] Response: ${proxyRes.statusCode} for ${req.path}`
+//       ` [PRODUCT-PROXY] Response: ${proxyRes.statusCode} for ${req.path}`
 //     );
 
 //     // Add CORS headers
