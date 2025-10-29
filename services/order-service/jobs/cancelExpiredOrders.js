@@ -36,7 +36,7 @@ const checkAndCancelOrders = async () => {
 
     if (result.modifiedCount > 0) {
       console.log(
-        `[Cron Job] ✅ Đã hủy thành công ${result.modifiedCount} đơn hàng.`
+        `[Cron Job]  Đã hủy thành công ${result.modifiedCount} đơn hàng.`
       );
       console.log("[Cron Job] ℹ️ Không tìm thấy đơn hàng nào phù hợp để hủy.");
     }

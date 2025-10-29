@@ -6,11 +6,17 @@ const kafka = new Kafka({
 
 const producer = kafka.producer();
 
-async function sendOrderCreatedEvent(order) {
+const runProducer = async () => {
   try {
     await producer.connect();
     console.log(" [KAFKA] Producer connected successfully");
+  } catch (error) {
+    console.log(" [KAFKA] Failed to connect producer:", error.message);
+  }
+};
 
+async function sendOrderCreatedEvent(order) {
+  try {
     await producer.send({
       topic: "ORDER-CREATED",
       messages: [
@@ -29,6 +35,7 @@ async function sendOrderCreatedEvent(order) {
     });
   } catch (error) {
     console.error(" [KAFKA] Failed to send message:", error.message);
+    throw error;
   }
 }
-module.exports = { sendOrderCreatedEvent };
+module.exports = { sendOrderCreatedEvent, runProducer };
