@@ -7,17 +7,25 @@
     "dev": "nodemon src/index.js",
     "start": "node src/index.js"
   },
-  "keywords": ["product-service", "microservices", "express", "mongoose"],
+  "keywords": [
+    "product-service",
+    "microservices",
+    "express",
+    "mongoose"
+  ],
   "author": "",
   "license": "ISC",
   "description": "Product service for microservices architecture",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.8.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
-    "mongoose": "^8.18.2",
     "jsonwebtoken": "^9.0.2",
-    "bcryptjs": "^3.0.2"
+    "mongoose": "^8.18.2",
+    "multer": "^2.0.2",
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

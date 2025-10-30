@@ -10,7 +10,8 @@ const addProduct = async (req, res) => {
   try {
     const {
       name,
-      avatar_url,
+      imageUrl,
+      imagePublicId,
       price,
       quantity,
       sold_count,
@@ -19,12 +20,13 @@ const addProduct = async (req, res) => {
     } = req.body;
     if (
       !name ||
-      !avatar_url ||
       !price ||
       !quantity ||
       !sold_count ||
       !discount ||
-      !days_valid
+      !days_valid ||
+      !imageUrl ||
+      !imagePublicId
     ) {
       return errorResponse(res, 400, "Missing required fields");
     }
@@ -33,14 +35,16 @@ const addProduct = async (req, res) => {
     }
     const newProduct = await new Product({
       name,
-      avatar_url,
+      // avatar_url,
       price,
       quantity,
       sold_count,
       discount,
       days_valid,
+      imageUrl,
+      imagePublicId,
     }).save();
-
+    console.log("New product added:", newProduct);
     return successResponse(res, 201, "Thêm sản phẩm thành công", newProduct);
   } catch (error) {
     return errorResponse(
