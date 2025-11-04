@@ -16,16 +16,7 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    // avatar_url: {
-    //   type: String,
-    //   required: [true, "URL ảnh đại diện là bắt buộc"],
-    //   validate: {
-    //     validator: function (v) {
-    //       return /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(v);
-    //     },
-    //     message: "URL ảnh không hợp lệ",
-    //   },
-    // },
+
     price: {
       type: Number,
       required: [true, "Giá sản phẩm là bắt buộc"],

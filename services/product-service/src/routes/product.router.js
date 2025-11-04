@@ -23,7 +23,7 @@ const uploadPath = path.join(
 const upload = multer({ dest: uploadPath });
 // Public routes (không cần authentication)
 router.get("/", getProducts);
-router.get("/:id", getProductById);
+router.get("/getdetailproduct/:id", getProductById);
 
 // Protected routes (cần authentication)
 // Chỉ ADMIN mới có thể thêm sản phẩm

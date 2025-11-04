@@ -166,6 +166,3 @@ module.exports = {
   conflictResponse,
   internalErrorResponse,
 };
-
-
-
