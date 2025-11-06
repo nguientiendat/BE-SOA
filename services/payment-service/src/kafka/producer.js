@@ -1,3 +1,4 @@
+const { link } = require("fs");
 const { Kafka } = require("kafkajs");
 const kafka = new Kafka({
   clientId: "payment-service",
@@ -16,6 +17,23 @@ async function connectProducer() {
   } catch (error) {
     console.error("❌ [KAFKA] Failed to connect producer:", error.message);
   }
+}
+
+async function createdLinkCheckoutEvent(linkCheckout) {
+  try {
+    await producer.send({
+      topic: "LINK-CHECKOUT-EVENT",
+      messages: [
+        {
+          key: linkCheckout.orderCode.toString(),
+          value: JSON.stringify({
+            checkoutUrl: linkCheckout.checkoutUrl,
+            orderCode: linkCheckout.orderCode,
+          }),
+        },
+      ],
+    });
+  } catch (error) {}
 }
 
 async function sendPaymentSuccessfulEvent(payment) {
@@ -39,4 +57,8 @@ async function sendPaymentSuccessfulEvent(payment) {
     console.error("❌ [KAFKA] Failed to send message:", error.message);
   }
 }
-module.exports = { connectProducer, sendPaymentSuccessfulEvent };
+module.exports = {
+  connectProducer,
+  sendPaymentSuccessfulEvent,
+  createdLinkCheckoutEvent,
+};

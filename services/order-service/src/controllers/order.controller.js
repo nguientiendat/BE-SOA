@@ -45,5 +45,26 @@ const createOrder = async (req, res) => {
     res.status(500).json({ message: "Failed to get cart data" });
   }
 };
+const getCheckoutUrl = async (req, res) => {
+  try {
+    console.log("ĐÃ NHẬN ĐƯỢC YÊU CẦU TẠI /checkout/:orderId");
+    const idOrder = req.params.orderId;
+    const order = await Order.findById(idOrder).select(
+      "checkoutUrl orderStatus"
+    );
+    if (!order) {
+      // Trả về 404 để FE biết polling thất bại
+      return res.status(404).json({ message: "Order not found" });
+    }
 
-module.exports = { createOrder };
+    res.status(200).json({
+      checkoutUrl: order.checkoutUrl, // Sẽ là "http://..." hoặc null
+      orderStatus: order.orderStatus, // Sẽ là "PENDING" hoặc "CANCELLED"
+    });
+  } catch (error) {
+    console.error("Lỗi khi lấy checkout URL:", error.message);
+    res.status(500).json({ message: "Failed to get checkout URL" });
+  }
+};
+
+module.exports = { createOrder, getCheckoutUrl };
