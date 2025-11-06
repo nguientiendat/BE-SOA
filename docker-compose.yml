@@ -1,22 +1,19 @@
-# 🐳 Docker Compose cho hệ thống microservices
-# Đã sửa lỗi indent, network, env_file, và các phần lỗi thời.
-
 services:
-  # === Zookeeper ===
+  # === 1. DEPENDENCIES (CƠ SỞ HẠ TẦNG) ===
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
     networks:
       - microservices-network
     restart: unless-stopped
 
-  # === Kafka ===
   kafka:
     image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
     ports:
-      - "9092:9092"   # Dùng trong Docker network
-      - "9094:9094"   # Dùng cho service ngoài Docker
+      - "9094:9094" # Cổng cho local dev
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:9094
@@ -30,11 +27,39 @@ services:
       - microservices-network
     restart: unless-stopped
 
-  # === Auth Service ===
+  mongodb:
+    image: mongo:7.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  # === 2. API GATEWAY (NGINX) ===
+  api-gateway:
+    image: nginx:latest
+    container_name: api-gateway
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - auth-service
+      - product-service
+      - cart-service
+      - order-service
+      - payment-service
+      - email-service
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  # === 3. APPLICATION SERVICES ===
   auth-service:
     build: ./services/auth-service
-    ports:
-      - "3001:3001"
     env_file:
       - ./services/auth-service/.env
     environment:
@@ -49,11 +74,8 @@ services:
       - microservices-network
     restart: unless-stopped
 
-  # === Product Service ===
   product-service:
     build: ./services/product-service
-    ports:
-      - "3002:3002"
     env_file:
       - ./services/product-service/.env
     environment:
@@ -66,11 +88,8 @@ services:
       - microservices-network
     restart: unless-stopped
 
-  # === Cart Service ===
   cart-service:
     build: ./services/cart-service
-    ports:
-      - "3003:3003"
     env_file:
       - ./services/cart-service/.env
     environment:
@@ -83,11 +102,8 @@ services:
       - microservices-network
     restart: unless-stopped
 
-  # === Order Service ===
   order-service:
     build: ./services/order-service
-    ports:
-      - "3005:3005"
     env_file:
       - ./services/order-service/.env
     environment:
@@ -100,11 +116,8 @@ services:
       - microservices-network
     restart: unless-stopped
 
-  # === Payment Service ===
   payment-service:
     build: ./services/payment-service
-    ports:
-      - "3004:3004"
     env_file:
       - ./services/payment-service/.env
     environment:
@@ -119,11 +132,8 @@ services:
       - microservices-network
     restart: unless-stopped
 
-  # === Email Service ===
   email-service:
     build: ./services/email-service
-    ports:
-      - "3006:3006"
     env_file:
       - ./services/email-service/.env
     environment:
@@ -136,18 +146,6 @@ services:
       - microservices-network
     restart: unless-stopped
 
-  # === MongoDB ===
-  mongodb:
-    image: mongo:7.0
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - microservices-network
-    restart: unless-stopped
-
-# === Volumes & Networks ===
 volumes:
   mongodb_data:
 
