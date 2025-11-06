@@ -1,18 +1,22 @@
-version: '3.8'
+# 🐳 Docker Compose cho hệ thống microservices
+# Đã sửa lỗi indent, network, env_file, và các phần lỗi thời.
 
 services:
-  # zookeeper:
-
+  # === Zookeeper ===
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - microservices-network
+    restart: unless-stopped
 
+  # === Kafka ===
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     ports:
-      - "9092:9092" # Dùng trong Docker network
-      - "9094:9094" # Dùng cho service ngoài Docker
+      - "9092:9092"   # Dùng trong Docker network
+      - "9094:9094"   # Dùng cho service ngoài Docker
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:9094
@@ -22,98 +26,117 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
       - zookeeper
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  # === Auth Service ===
   auth-service:
     build: ./services/auth-service
     ports:
       - "3001:3001"
+    env_file:
+      - ./services/auth-service/.env
     environment:
       - NODE_ENV=development
       - PORT=3001
       - MONGO_URI=mongodb://mongodb:27017/auth_service
-      - JWT_SECRET=your-super-secret-jwt-key-here
-      - KAFKA_BROKER=localhost:9092
+      - KAFKA_BROKER=kafka:9092
     depends_on:
       - mongodb
+      - kafka
     networks:
       - microservices-network
+    restart: unless-stopped
 
-  # Product Service
+  # === Product Service ===
   product-service:
     build: ./services/product-service
     ports:
       - "3002:3002"
+    env_file:
+      - ./services/product-service/.env
     environment:
       - NODE_ENV=development
       - PORT=3002
       - MONGO_URI=mongodb://mongodb:27017/product_service
-      - JWT_SECRET=your-super-secret-jwt-key-here
     depends_on:
       - mongodb
     networks:
       - microservices-network
     restart: unless-stopped
+
+  # === Cart Service ===
   cart-service:
     build: ./services/cart-service
     ports:
       - "3003:3003"
+    env_file:
+      - ./services/cart-service/.env
     environment:
       - NODE_ENV=development
       - PORT=3003
       - MONGO_URI=mongodb://mongodb:27017/cart_service
-      - JWT_SECRET=your-super-secret-jwt-key-here
     depends_on:
       - mongodb
     networks:
       - microservices-network
     restart: unless-stopped
+
+  # === Order Service ===
   order-service:
     build: ./services/order-service
     ports:
       - "3005:3005"
+    env_file:
+      - ./services/order-service/.env
     environment:
       - NODE_ENV=development
       - PORT=3005
       - MONGO_URI=mongodb://mongodb:27017/order_service
-      - JWT_SECRET=your-super-secret-jwt-key-here
     depends_on:
       - mongodb
     networks:
       - microservices-network
     restart: unless-stopped
-  # Using existing Kafka services (external)
+
+  # === Payment Service ===
   payment-service:
     build: ./services/payment-service
     ports:
       - "3004:3004"
+    env_file:
+      - ./services/payment-service/.env
     environment:
       - NODE_ENV=development
       - PORT=3004
       - MONGO_URI=mongodb://mongodb:27017/payment_service
       - KAFKA_BROKER=kafka:9092
-      - JWT_SECRET=your-super-secret-jwt-key-here
     depends_on:
       - mongodb
+      - kafka
     networks:
       - microservices-network
     restart: unless-stopped
+
+  # === Email Service ===
   email-service:
     build: ./services/email-service
     ports:
       - "3006:3006"
+    env_file:
+      - ./services/email-service/.env
     environment:
       - NODE_ENV=development
       - PORT=3006
       - MONGO_URI=mongodb://mongodb:27017/email_service
-      - SMTP_HOST=smtp.example.com
-      - SMTP_PORT=587
-      - SMTP_USER=your_smtp_user
-      - SMTP_PASS=your_smtp_password
     depends_on:
       - mongodb
     networks:
       - microservices-network
     restart: unless-stopped
-  # MongoDB Database
+
+  # === MongoDB ===
   mongodb:
     image: mongo:7.0
     ports:
@@ -122,10 +145,11 @@ services:
       - mongodb_data:/data/db
     networks:
       - microservices-network
+    restart: unless-stopped
 
+# === Volumes & Networks ===
 volumes:
   mongodb_data:
-
 
 networks:
   microservices-network:
