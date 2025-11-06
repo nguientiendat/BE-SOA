@@ -27,6 +27,22 @@ services:
       - microservices-network
     restart: unless-stopped
 
+  kafka-ui:
+    image: provectus/kafka-ui:latest # Image Kafka UI phổ biến nhất
+    container_name: kafka-ui
+    ports:
+      - "8080:8080" # <-- Mở cổng 8080 của server
+    depends_on:
+      - kafka
+      - zookeeper
+    networks:
+      - microservices-network
+    restart: unless-stopped
+    environment:
+      # Báo cho UI biết Kafka và Zookeeper ở đâu
+      KAFKA_CLUSTERS_0_NAME: 'Dự án SOA' # Tên bạn tự đặt
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka:9092' # <-- Địa chỉ NỘI BỘ
+      KAFKA_CLUSTERS_0_ZOOKEEPER: 'zookeeper:2181' # <-- Địa chỉ NỘI BỘ
   mongodb:
     image: mongo:7.0
     container_name: mongodb
