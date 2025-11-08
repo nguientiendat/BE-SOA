@@ -10,7 +10,7 @@ const Payment = require("../models/payment.model");
 // const { default: axios } = require("axios");
 const kafka = new Kafka({
   clientId: "payment-service",
-  brokers: ["localhost:9094"],
+  brokers: [process.env.KAFKA_BROKER || "kafka:9092"],
 });
 console.log("Gia tri cua PayOS la:", PayOS);
 const consumer = kafka.consumer({ groupId: "payment-group" });

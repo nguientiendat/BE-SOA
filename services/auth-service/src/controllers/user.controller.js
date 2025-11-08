@@ -14,7 +14,7 @@ const { AUTH_SUCCESS, AUTH_ERRORS } = require(path.join(
 ));
 const User = require("../models/user.model");
 
-const { sendUserRegisteredEvent } = require("../../kafka/provider");
+const { sendUserRegisteredEvent } = require("../kafka/provider");
 
 // Đăng ký tài khoản mới
 const register = async (req, res) => {

@@ -1,10 +1,10 @@
 const { Kafka } = require("kafkajs");
 // Import hàm gửi mail bạn đã tạo
-const { sendThankYouEmail } = require("../src/service/email.service");
+const { sendThankYouEmail } = require("../service/email.service");
 
 const kafka = new Kafka({
   clientId: "email-service",
-  brokers: [process.env.KAFKA_BROKERS || "localhost:9094"],
+  brokers: [process.env.KAFKA_BROKER || "kafka:9092"],
 });
 
 // QUAN TRỌNG: Dùng groupId KHÁC với order-svc
