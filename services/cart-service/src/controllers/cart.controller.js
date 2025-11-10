@@ -1,6 +1,5 @@
 // Cart controller
 const Cart = require("../models/cart.model");
-const { runConsumer } = require("../kafka/consumer.js");
 const axios = require("axios");
 const createCart = async (userId) => {
   try {
@@ -21,17 +20,17 @@ const createCart = async (userId) => {
 
 const addToCart = async (req, res) => {
   try {
-    const userId = req.user.id;
-    console.log(userId);
+    const userId = req.user.userId;
+
     const { productId } = req.body;
 
     // Tìm giỏ hàng của user
-    let cart = await Cart.findOne({ userId });
-    console.log(cart);
-    if (!cart) {
-      cart = new Cart({ userId, items: [] });
-    }
-    console.log(cart.items);
+    let cart = await Cart.findOne({ _id: userId });
+    console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^", cart);
+    // if (!cart) {
+    //   cart = new Cart({ userId, items: [] });
+    // }
+    console.log("#####################################", cart.items);
     // Kiểm tra xem sản phẩm đã có trong giỏ chưa
     const existingItem = cart.items.find((item) =>
       item.productId.equals(productId)
@@ -44,7 +43,7 @@ const addToCart = async (req, res) => {
     const getProductInfo = async (productId) => {
       try {
         const response = await axios.get(
-          `http://product-service:3002/getdetailproduct/${productId}`
+          `http://localhost:3002/getdetailproduct/${productId}`
         );
         return response.data;
       } catch (error) {
@@ -53,13 +52,13 @@ const addToCart = async (req, res) => {
       }
     };
     const product = await getProductInfo(productId);
-
+    console.log(product.data);
     if (product) {
       // Thêm sản phẩm mới
       cart.items.push({
-        productId,
+        productId: product.data._id,
         quantity: 1,
-        price: product.price * (1 - product.discount / 100),
+        price: product.data.price * (1 - product.data.discount / 100),
       });
       cart.totalPrice = cart.items.reduce(
         (total, item) => total + item.price * item.quantity,
@@ -79,7 +78,48 @@ const addToCart = async (req, res) => {
   }
 };
 
-const removeFromCart = async (userId, productId) => {};
+const removeFromCart = async (req, res) => {
+  try {
+    const productId = req.body.productId;
+    const userId = req.user.userId;
+    // Tìm giỏ hàng của user
+    const cart = await Cart.findById(userId);
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    // Tìm index của sản phẩm trong giỏ
+    const itemIndex = cart.items.findIndex(
+      (item) => item.productId.toString() === productId
+    );
+
+    // Nếu không tìm thấy sản phẩm
+    if (itemIndex === -1) {
+      return res.status(404).json({ message: "Product not found in cart" });
+    }
+
+    // Xóa sản phẩm ra khỏi giỏ
+    cart.items.splice(itemIndex, 1);
+
+    // Cập nhật lại tổng tiền (nếu bạn có lưu total)
+    cart.total = cart.items.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+
+    // Lưu thay đổi vào DB
+    await cart.save();
+
+    // Trả kết quả mới
+    return res.status(200).json({
+      message: "Product removed successfully",
+      cart,
+    });
+  } catch (error) {
+    console.error("Error removing product from cart:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 const getCart = async (req, res) => {
   try {
@@ -101,4 +141,5 @@ module.exports = {
   createCart,
   getCart,
   addToCart,
+  removeFromCart,
 };
