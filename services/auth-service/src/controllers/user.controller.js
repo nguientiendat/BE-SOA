@@ -19,14 +19,14 @@ const { sendUserRegisteredEvent } = require("../../kafka/provider");
 // Đăng ký tài khoản mới
 const register = async (req, res) => {
   try {
-    const { username, email, password, role = "user" } = req.body;
+    const { username, email, password, role, phoneNumber = "user" } = req.body;
 
     // Kiểm tra dữ liệu đầu vào
-    if (!username || !email || !password) {
+    if (!username || !email || !password || !phoneNumber) {
       return errorResponse(
         res,
         400,
-        "Vui lòng cung cấp đầy đủ thông tin: username, email, password"
+        "Vui lòng cung cấp đầy đủ thông tin: username, email, password, phoneNumber"
       );
     }
 
@@ -37,10 +37,10 @@ const register = async (req, res) => {
     }
 
     // Kiểm tra username đã tồn tại chưa
-    const existingUsername = await User.findOne({ username });
-    if (existingUsername) {
-      return conflictResponse(res, "Username đã được sử dụng");
-    }
+    // const existingUsername = await User.findOne({ username });
+    // if (existingUsername) {
+    //   return conflictResponse(res, "Username đã được sử dụng");
+    // }
 
     // Mã hóa password
     const saltRounds = 10;
@@ -52,6 +52,7 @@ const register = async (req, res) => {
       email,
       password: hashedPassword,
       role,
+      phoneNumber,
     });
 
     // Lưu user vào database
@@ -75,6 +76,7 @@ const register = async (req, res) => {
         username: savedUser.username,
         role: savedUser.role,
         email: savedUser.email,
+        phoneNumber: savedUser.phoneNumber,
       },
       process.env.JWT_SECRET || "your-secret-key",
       "24h"
@@ -86,6 +88,7 @@ const register = async (req, res) => {
         id: savedUser._id,
         username: savedUser.username,
         email: savedUser.email,
+        phoneNumber: savedUser.phoneNumber,
       },
       token,
     });

@@ -56,6 +56,7 @@ const paymentCancelled = async (req, res) => {
       amount: data.amount,
       orderCode: orderCodeNum.toString(),
       status: updateStatus,
+      items: paymentDoc.items,
     };
     sendPaymentSuccessfulEvent(paymentMessage);
 

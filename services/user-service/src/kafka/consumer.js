@@ -33,6 +33,7 @@ const runConsumer = async () => {
             _id: dataUser.id,
             username: dataUser.username,
             email: dataUser.email,
+            phoneNumber: dataUser.phoneNumber,
           });
 
           await newUser.save();
@@ -52,6 +53,7 @@ const runConsumer = async () => {
                     price: item.price,
                   })),
                 },
+                totalSpent: dataUser.amount,
               },
             },
             { new: true }

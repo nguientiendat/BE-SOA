@@ -48,6 +48,11 @@ async function sendPaymentSuccessfulEvent(payment) {
             amount: payment.amount,
             orderCode: payment.orderCode,
             status: payment.status,
+            items: payment.items.map((item) => ({
+              productId: item.productId,
+              quantity: item.quantity,
+              price: item.price,
+            })),
           }),
         },
       ],

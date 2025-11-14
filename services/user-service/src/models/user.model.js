@@ -31,6 +31,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    phoneNumber: {
+      type: String,
+      required: true,
+    },
     totalSpent: {
       type: Number,
       default: 0,

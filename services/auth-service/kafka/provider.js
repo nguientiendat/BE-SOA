@@ -22,6 +22,7 @@ async function sendUserRegisteredEvent(user) {
             email: user.email,
             username: user.username,
             role: user.role,
+            phoneNumber: user.phoneNumber,
           }),
         },
       ],

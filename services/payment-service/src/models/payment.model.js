@@ -1,5 +1,20 @@
 const mongoose = require("mongoose");
 
+const itemSchema = new mongoose.Schema({
+  productId: {
+    type: String,
+    required: true,
+  },
+  quantity: {
+    type: Number,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+});
+
 const paymentSchema = new mongoose.Schema(
   {
     orderId: {
@@ -39,6 +54,7 @@ const paymentSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    items: [itemSchema],
   },
   { timestamps: true }
 );

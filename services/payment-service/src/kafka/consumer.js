@@ -44,8 +44,14 @@ async function runConsumer(req, res) {
           orderCode: order.orderCode,
           counterAccountNumber: null,
           paymentLinkId: null,
-          items: order.items,
+
+          items: order.items.map((item) => ({
+            productId: item._id,
+            quantity: item.quantity,
+            price: item.price,
+          })),
         });
+        console.log(`Them vao DB:`, newPayment);
         await newPayment.save();
         console.log(`Them vao DB thanh cong`);
 

@@ -59,6 +59,8 @@ const addToCart = async (req, res) => {
         productId: product.data._id,
         quantity: 1,
         price: product.data.price * (1 - product.data.discount / 100),
+        name: product.data.name,
+        imageUrl: product.data.imageUrl,
       });
       cart.totalPrice = cart.items.reduce(
         (total, item) => total + item.price * item.quantity,
@@ -80,40 +82,30 @@ const addToCart = async (req, res) => {
 
 const removeFromCart = async (req, res) => {
   try {
-    const productId = req.body.productId;
+    const { productId } = req.body;
     const userId = req.user.userId;
-    // Tìm giỏ hàng của user
-    const cart = await Cart.findById(userId);
-    if (!cart) {
+
+    // Xóa sản phẩm khỏi mảng items bằng $pull
+    const updatedCart = await Cart.findOneAndUpdate(
+      { _id: userId },
+      { $pull: { items: { productId: productId } } },
+      { new: true }
+    );
+
+    if (!updatedCart) {
       return res.status(404).json({ message: "Cart not found" });
     }
 
-    // Tìm index của sản phẩm trong giỏ
-    const itemIndex = cart.items.findIndex(
-      (item) => item.productId.toString() === productId
-    );
-
-    // Nếu không tìm thấy sản phẩm
-    if (itemIndex === -1) {
-      return res.status(404).json({ message: "Product not found in cart" });
-    }
-
-    // Xóa sản phẩm ra khỏi giỏ
-    cart.items.splice(itemIndex, 1);
-
-    // Cập nhật lại tổng tiền (nếu bạn có lưu total)
-    cart.total = cart.items.reduce(
+    // Tính lại tổng tiền
+    updatedCart.total = updatedCart.items.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
     );
+    await updatedCart.save();
 
-    // Lưu thay đổi vào DB
-    await cart.save();
-
-    // Trả kết quả mới
     return res.status(200).json({
       message: "Product removed successfully",
-      cart,
+      cart: updatedCart,
     });
   } catch (error) {
     console.error("Error removing product from cart:", error);
