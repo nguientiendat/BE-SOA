@@ -1,130 +1,166 @@
-version: '3.8'
-
 services:
+  # === 1. DEPENDENCIES (CƠ SỞ HẠ TẦNG) ===
   zookeeper:
-    image: 'bitnami/zookeeper:latest'
-    ports:
-      - "2181:2181"
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
     environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
+      ZOOKEEPER_CLIENT_PORT: 2181
     networks:
       - microservices-network
     restart: unless-stopped
-  # Auth Service
+
   kafka:
-    image: 'bitnami/kafka:latest'
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
     ports:
-      - "9092:9092"
+      - "9094:9094" # Cổng cho local dev
     environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
-      - ALLOW_PLAINTEXT_LISTENER=yes
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:9094
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
       - zookeeper
     networks:
       - microservices-network
     restart: unless-stopped
-  auth-service:
-    build: ./services/auth-service
-    ports:
-      - "3001:3001"
-    environment:
-      - NODE_ENV=development
-      - PORT=3001
-      - MONGO_URI=mongodb://mongodb:27017/auth_service
-      - JWT_SECRET=your-super-secret-jwt-key-here
-      - KAFKA_BROKER=localhost:9092
-    depends_on:
-      - mongodb
-    networks:
-      - microservices-network
 
-  # Product Service
-  product-service:
-    build: ./services/product-service
+  kafka-ui:
+    image: provectus/kafka-ui:latest # Image Kafka UI phổ biến nhất
+    container_name: kafka-ui
     ports:
-      - "3002:3002"
-    environment:
-      - NODE_ENV=development
-      - PORT=3002
-      - MONGO_URI=mongodb://mongodb:27017/product_service
-      - JWT_SECRET=your-super-secret-jwt-key-here
+      - "8080:8080" # <-- Mở cổng 8080 của server
     depends_on:
-      - mongodb
+      - kafka
+      - zookeeper
     networks:
       - microservices-network
     restart: unless-stopped
-  cart-service:
-    build: ./services/cart-service
-    ports:
-      - "3003:3003"
     environment:
-      - NODE_ENV=development
-      - PORT=3003
-      - MONGO_URI=mongodb://mongodb:27017/cart_service
-      - JWT_SECRET=your-super-secret-jwt-key-here
-    depends_on:
-      - mongodb
-    networks:
-      - microservices-network
-    restart: unless-stopped
-  order-service:
-    build: ./services/order-service
-    ports:
-      - "3005:3005"
-    environment:
-      - NODE_ENV=development
-      - PORT=3005
-      - MONGO_URI=mongodb://mongodb:27017/order_service
-      - JWT_SECRET=your-super-secret-jwt-key-here
-    depends_on:
-      - mongodb
-    networks:
-      - microservices-network
-    restart: unless-stopped
-  # Using existing Kafka services (external)
-  payment-service:
-    build: ./services/payment-service
-    ports:
-      - "3004:3004"
-    environment:
-      - NODE_ENV=development
-      - PORT=3004
-      - MONGO_URI=mongodb://mongodb:27017/payment_service
-      - KAFKA_BROKER=kafka:9092
-      - JWT_SECRET=your-super-secret-jwt-key-here
-    depends_on:
-      - mongodb
-    networks:
-      - microservices-network
-    restart: unless-stopped
-  email-service:
-    build: ./services/email-service
-    ports:
-      - "3006:3006"
-    environment:
-      - NODE_ENV=development
-      - PORT=3006
-      - MONGO_URI=mongodb://mongodb:27017/email_service
-      - SMTP_HOST=smtp.example.com
-      - SMTP_PORT=587
-      - SMTP_USER=your_smtp_user
-      - SMTP_PASS=your_smtp_password
-    depends_on:
-      - mongodb
-    networks:
-      - microservices-network
-    restart: unless-stopped
-  # MongoDB Database
+      # Báo cho UI biết Kafka và Zookeeper ở đâu
+      KAFKA_CLUSTERS_0_NAME: 'Dự án SOA' # Tên bạn tự đặt
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka:9092' # <-- Địa chỉ NỘI BỘ
+      KAFKA_CLUSTERS_0_ZOOKEEPER: 'zookeeper:2181' # <-- Địa chỉ NỘI BỘ
   mongodb:
     image: mongo:7.0
+    container_name: mongodb
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
     networks:
       - microservices-network
+    restart: unless-stopped
+
+  # === 2. API GATEWAY (NGINX) ===
+  api-gateway:
+    image: nginx:latest
+    container_name: api-gateway
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - auth-service
+      - product-service
+      - cart-service
+      - order-service
+      - payment-service
+      - email-service
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  # === 3. APPLICATION SERVICES ===
+  auth-service:
+    build: ./services/auth-service
+    env_file:
+      - ./services/auth-service/.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - MONGO_URI=mongodb://mongodb:27017/auth_service
+      - KAFKA_BROKER=kafka:9092
+    depends_on:
+      - mongodb
+      - kafka
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  product-service:
+    build: ./services/product-service
+    env_file:
+      - ./services/product-service/.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+      - MONGO_URI=mongodb://mongodb:27017/product_service
+    depends_on:
+      - mongodb
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  cart-service:
+    build: ./services/cart-service
+    env_file:
+      - ./services/cart-service/.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+      - MONGO_URI=mongodb://mongodb:27017/cart_service
+    depends_on:
+      - mongodb
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  order-service:
+    build: ./services/order-service
+    env_file:
+      - ./services/order-service/.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3005
+      - MONGO_URI=mongodb://mongodb:27017/order_service
+    depends_on:
+      - mongodb
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  payment-service:
+    build: ./services/payment-service
+    env_file:
+      - ./services/payment-service/.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3004
+      - MONGO_URI=mongodb://mongodb:27017/payment_service
+      - KAFKA_BROKER=kafka:9092
+    depends_on:
+      - mongodb
+      - kafka
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  email-service:
+    build: ./services/email-service
+    env_file:
+      - ./services/email-service/.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3006
+      - MONGO_URI=mongodb://mongodb:27017/email_service
+    depends_on:
+      - mongodb
+    networks:
+      - microservices-network
+    restart: unless-stopped
 
 volumes:
   mongodb_data:
@@ -132,4 +168,3 @@ volumes:
 networks:
   microservices-network:
     driver: bridge
-

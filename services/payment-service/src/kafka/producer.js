@@ -1,3 +1,4 @@
+const { link } = require("fs");
 const { Kafka } = require("kafkajs");
 const kafka = new Kafka({
   clientId: "payment-service",
@@ -18,6 +19,23 @@ async function connectProducer() {
   }
 }
 
+async function createdLinkCheckoutEvent(linkCheckout) {
+  try {
+    await producer.send({
+      topic: "LINK-CHECKOUT-EVENT",
+      messages: [
+        {
+          key: linkCheckout.orderCode.toString(),
+          value: JSON.stringify({
+            checkoutUrl: linkCheckout.checkoutUrl,
+            orderCode: linkCheckout.orderCode,
+          }),
+        },
+      ],
+    });
+  } catch (error) {}
+}
+
 async function sendPaymentSuccessfulEvent(payment) {
   try {
     await producer.send({
@@ -30,6 +48,11 @@ async function sendPaymentSuccessfulEvent(payment) {
             amount: payment.amount,
             orderCode: payment.orderCode,
             status: payment.status,
+            items: payment.items.map((item) => ({
+              productId: item.productId,
+              quantity: item.quantity,
+              price: item.price,
+            })),
           }),
         },
       ],
@@ -39,4 +62,8 @@ async function sendPaymentSuccessfulEvent(payment) {
     console.error("❌ [KAFKA] Failed to send message:", error.message);
   }
 }
-module.exports = { connectProducer, sendPaymentSuccessfulEvent };
+module.exports = {
+  connectProducer,
+  sendPaymentSuccessfulEvent,
+  createdLinkCheckoutEvent,
+};

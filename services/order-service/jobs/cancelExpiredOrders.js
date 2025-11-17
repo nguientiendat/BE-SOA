@@ -26,7 +26,7 @@ const checkAndCancelOrders = async () => {
       createdAt: { $lte: TIME_LIMIT },
     };
 
-    console.log("[Cron Job] ℹ️ Đang dùng bộ lọc:", JSON.stringify(filter));
+    console.log("[Cron Job] ℹ Đang dùng bộ lọc:", JSON.stringify(filter));
 
     const update = {
       $set: { orderStatus: "CANCELLED" },
@@ -38,11 +38,11 @@ const checkAndCancelOrders = async () => {
       console.log(
         `[Cron Job]  Đã hủy thành công ${result.modifiedCount} đơn hàng.`
       );
-      console.log("[Cron Job] ℹ️ Không tìm thấy đơn hàng nào phù hợp để hủy.");
+      console.log("[Cron Job]  Không tìm thấy đơn hàng nào phù hợp để hủy.");
     }
   } catch (error) {
     console.error(
-      "[Cron Job] ❌ Lỗi nghiêm trọng khi chạy job:",
+      "[Cron Job]  Lỗi nghiêm trọng khi chạy job:",
       error.message
     );
   }

@@ -1,6 +1,6 @@
 // Kafka consumer - to be implemented
 const dotenv = require("dotenv");
-
+const { createdLinkCheckoutEvent } = require("./producer");
 dotenv.config();
 const { Kafka } = require("kafkajs");
 const { PayOS } = require("@payos/node");
@@ -44,8 +44,14 @@ async function runConsumer(req, res) {
           orderCode: order.orderCode,
           counterAccountNumber: null,
           paymentLinkId: null,
-          items: order.items,
+
+          items: order.items.map((item) => ({
+            productId: item._id,
+            quantity: item.quantity,
+            price: item.price,
+          })),
         });
+        console.log(`Them vao DB:`, newPayment);
         await newPayment.save();
         console.log(`Them vao DB thanh cong`);
 
@@ -65,6 +71,8 @@ async function runConsumer(req, res) {
           paymentData
         );
         console.log(`[PAYOS] Response:`, paymentLinkResponse);
+
+        await createdLinkCheckoutEvent(paymentLinkResponse);
 
         newPayment.status = "PENDING";
         newPayment.transactionId = paymentLinkResponse.paymentLinkId; // Hoặc một ID phù hợp từ PayOS

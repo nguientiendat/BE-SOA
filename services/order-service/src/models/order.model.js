@@ -1,5 +1,8 @@
 // Order model - to be implemented
 const mongoose = require("mongoose");
+const {
+  checkout,
+} = require("../../../product-service/src/routes/product.router");
 
 const orderItems = new mongoose.Schema({
   _id: {
@@ -40,6 +43,11 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  checkoutUrl: {
+    type: String,
+    default: null,
+  },
+
   createdAt: {
     type: Date,
     default: Date.now,

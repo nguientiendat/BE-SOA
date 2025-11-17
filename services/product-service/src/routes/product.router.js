@@ -3,6 +3,10 @@ const {
   addProduct,
   getProducts,
   getProductById,
+  deleteProduct,
+  getProductsAdmin,
+  restoreProduct,
+  editProduct,
 } = require("../controllers/product.controller");
 const { authMiddleware } = require("../middleware/auth.middleware");
 const {
@@ -24,7 +28,8 @@ const upload = multer({ dest: uploadPath });
 // Public routes (không cần authentication)
 router.get("/", getProducts);
 router.get("/getdetailproduct/:id", getProductById);
-
+router.post("/getproductsadmin", authMiddleware, getProductsAdmin);
+router.post("/restoreproduct", authMiddleware, restoreProduct);
 // Protected routes (cần authentication)
 // Chỉ ADMIN mới có thể thêm sản phẩm
 router.post(
@@ -39,5 +44,7 @@ router.post(
 
   addProduct
 );
+router.post("/deleteproduct", authMiddleware, deleteProduct);
+router.post("/editproduct", authMiddleware, editProduct);
 
 module.exports = router;

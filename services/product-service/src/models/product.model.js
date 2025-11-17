@@ -49,6 +49,14 @@ const productSchema = new mongoose.Schema(
       min: [1, "Số ngày hiệu lực phải lớn hơn 0"],
       default: 365,
     },
+    deleted: {
+      type: Boolean,
+      default: false,
+    },
+    description: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true, // Tự động tạo created_at và updated_at
