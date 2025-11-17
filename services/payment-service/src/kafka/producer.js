@@ -33,7 +33,9 @@ async function createdLinkCheckoutEvent(linkCheckout) {
         },
       ],
     });
-  } catch (error) {}
+  } catch (error) {
+    console.error("❌ [KAFKA] Failed to send message:", error.message);
+  }
 }
 
 async function sendPaymentSuccessfulEvent(payment) {

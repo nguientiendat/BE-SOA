@@ -11,15 +11,15 @@ const cartItemSchema = new mongoose.Schema({
   },
   price: {
     type: Number,
-    required: true,
+    // required: true,
   },
   name: {
     type: String,
-    required: true,
+    // required: true,
   },
   imageUrl: {
     type: String,
-    required: true,
+    // required: true,
   },
 });
 const cartSchema = new mongoose.Schema({

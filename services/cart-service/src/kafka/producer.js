@@ -12,7 +12,7 @@ async function sendCartUpdatedEvent(product) {
     console.log("📤 [KAFKA] Producer connected successfully");
 
     await producer.send({
-      topic: "adToCart-successful",
+      topic: "CART-ADDED",
       messages: [
         {
           key: product._id.toString(),
@@ -29,3 +29,4 @@ async function sendCartUpdatedEvent(product) {
     console.error("❌ [KAFKA] Failed to send message:", error.message);
   }
 }
+module.exports = { sendCartUpdatedEvent };
