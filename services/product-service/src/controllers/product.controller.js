@@ -213,6 +213,21 @@ const getProductsAdmin = async (req, res) => {
     );
   }
 };
+const getProductQuantity = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    const quantity = product.quantity;
+    if (quantity > 0) {
+      res
+        .status(200)
+        .json({ message: "Số lượng sản phẩm còn lại", check: true, quantity });
+    } else {
+      res.status(500).json({ message: "Sản phẩm đã hết", check: false });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 module.exports = {
   addProduct,
@@ -222,4 +237,5 @@ module.exports = {
   getProductsAdmin,
   restoreProduct,
   editProduct,
+  getProductQuantity,
 };

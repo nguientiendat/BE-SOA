@@ -16,7 +16,12 @@ const createOrder = async (req, res) => {
     if (!cartData.data.items || cartData.data.items.length === 0) {
       return res.status(400).json({ message: "Cart is empty" });
     }
-
+    for (const item of cartData.items) {
+      const result = axios.get(
+        `http://localhost:3002/checkquantity/${item.quantity}`
+      );
+      console.log("result: ", result);
+    }
     const totalAmount = cartData.data.items.reduce((total, item) => {
       return total + item.price * item.quantity;
     }, 0);
@@ -58,8 +63,8 @@ const getCheckoutUrl = async (req, res) => {
     }
 
     res.status(200).json({
-      checkoutUrl: order.checkoutUrl, // Sẽ là "http://..." hoặc null
-      orderStatus: order.orderStatus, // Sẽ là "PENDING" hoặc "CANCELLED"
+      checkoutUrl: order.checkoutUrl,
+      orderStatus: order.orderStatus,
     });
   } catch (error) {
     console.error("Lỗi khi lấy checkout URL:", error.message);

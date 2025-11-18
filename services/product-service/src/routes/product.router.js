@@ -7,6 +7,7 @@ const {
   getProductsAdmin,
   restoreProduct,
   editProduct,
+  getProductQuantity,
 } = require("../controllers/product.controller");
 const { authMiddleware } = require("../middleware/auth.middleware");
 const {
@@ -30,6 +31,7 @@ router.get("/", getProducts);
 router.get("/getdetailproduct/:id", getProductById);
 router.post("/getproductsadmin", authMiddleware, getProductsAdmin);
 router.post("/restoreproduct", authMiddleware, restoreProduct);
+router.get("/checkquantity/:id", getProductQuantity);
 // Protected routes (cần authentication)
 // Chỉ ADMIN mới có thể thêm sản phẩm
 router.post(

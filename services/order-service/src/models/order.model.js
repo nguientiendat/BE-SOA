@@ -4,21 +4,24 @@ const {
   checkout,
 } = require("../../../product-service/src/routes/product.router");
 
-const orderItems = new mongoose.Schema({
-  _id: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
+const orderItems = new mongoose.Schema(
+  {
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
+    quantity: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
   },
-  quantity: {
-    type: Number,
-    required: true,
-    min: 1,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-});
+  { _id: false }
+);
 const orderSchema = new mongoose.Schema({
   email: {
     type: String,
