@@ -1,7 +1,7 @@
 // Tải các biến môi trường (như API key) LÊN TRƯỚC TIÊN
 require("dotenv").config();
 
-const { runConsumer } = require("../kafka/consumer");
+const { runConsumer } = require("./kafka/consumer");
 
 console.log("🚀 Đang khởi động Email Service...");
 

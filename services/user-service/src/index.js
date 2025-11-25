@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const { runConsumer } = require("./src/kafka/consumer.js");
+const { runConsumer } = require("./kafka/consumer.js");
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -14,7 +14,7 @@ app.get("/health", (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
-const userRoutes = require("./src/routes/user.routes.js");
+const userRoutes = require("./routes/user.routes.js");
 app.use("/", userRoutes);
 mongoose
   .connect(

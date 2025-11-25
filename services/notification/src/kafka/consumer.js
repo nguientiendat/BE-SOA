@@ -6,7 +6,7 @@ const { handleCartAdded } = require("./handlers/cart.handler.js");
 const kafka = new Kafka({
   clientId: "notification-svc",
   // SỬA 3: Dùng process.env
-  brokers: [process.env.KAFKA_BROKER || "localhost:9094"],
+  brokers: [process.env.KAFKA_BROKER || `kafka:9092`],
 });
 
 const consumer = kafka.consumer({

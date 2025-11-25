@@ -3,7 +3,7 @@ const User = require("../models/user.model");
 
 const kafka = new Kafka({
   clientId: "user-service",
-  brokers: ["localhost:9094"],
+  brokers: ["kafka:9092"],
 });
 
 const consumer = kafka.consumer({ groupId: "user-service-group" });
