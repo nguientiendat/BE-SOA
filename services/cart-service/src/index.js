@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { runConsumer } = require("./kafka/consumer.js");
+const { connectKafka } = require("./kafka/producer.js");
 
 require("dotenv").config();
 
@@ -20,7 +21,7 @@ mongoose
   .catch((err) => console.log(err));
 
 runConsumer();
-
+connectKafka();
 app.get("/health", (req, res) => {
   res.status(200).send("Cart Service is healthy");
 });

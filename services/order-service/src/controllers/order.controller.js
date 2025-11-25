@@ -16,9 +16,9 @@ const createOrder = async (req, res) => {
     if (!cartData.data.items || cartData.data.items.length === 0) {
       return res.status(400).json({ message: "Cart is empty" });
     }
-    for (const item of cartData.items) {
-      const result = axios.get(
-        `http://localhost:3002/checkquantity/${item.quantity}`
+    for (const item of cartData.data.items) {
+      const result = await axios.get(
+        `http://localhost:3002/checkquantity/${item.productId}`
       );
       console.log("result: ", result);
     }

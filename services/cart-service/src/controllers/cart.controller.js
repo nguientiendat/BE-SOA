@@ -1,6 +1,7 @@
 // Cart controller
 const Cart = require("../models/cart.model");
 const axios = require("axios");
+const { sendCartUpdatedEvent } = require("../kafka/producer");
 const createCart = async (userId) => {
   try {
     const newCart = new Cart({
@@ -74,6 +75,7 @@ const addToCart = async (req, res) => {
     }
     console.log(" Thêm sản phẩm thành công");
     res.status(200).json(cart);
+    sendCartUpdatedEvent(product.data);
   } catch (error) {
     console.error("❌ Lỗi thêm giỏ hàng:", error);
     res.status(error.statusCode || 500).json({ message: error.message });

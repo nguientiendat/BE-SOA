@@ -28,7 +28,7 @@ services:
     restart: unless-stopped
 
   kafka-ui:
-    image: provectus/kafka-ui:latest # Image Kafka UI phổ biến nhất
+    image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
     ports:
       - "8080:8080" # <-- Mở cổng 8080 của server
@@ -75,7 +75,9 @@ services:
 
   # === 3. APPLICATION SERVICES ===
   auth-service:
-    build: ./services/auth-service
+    build: 
+      context: .
+      dockerfile: ./services/auth-service/Dockerfile
     env_file:
       - ./services/auth-service/.env
     environment:
@@ -91,7 +93,9 @@ services:
     restart: unless-stopped
 
   product-service:
-    build: ./services/product-service
+    build: 
+      context: .
+      dockerfile: ./services/product-service/Dockerfile
     env_file:
       - ./services/product-service/.env
     environment:
@@ -105,7 +109,9 @@ services:
     restart: unless-stopped
 
   cart-service:
-    build: ./services/cart-service
+    build: 
+      context: .
+      dockerfile: ./services/cart-service/Dockerfile
     env_file:
       - ./services/cart-service/.env
     environment:
@@ -119,7 +125,9 @@ services:
     restart: unless-stopped
 
   order-service:
-    build: ./services/order-service
+    build: 
+      context: .
+      dockerfile: ./services/order-service/Dockerfile
     env_file:
       - ./services/order-service/.env
     environment:
@@ -156,11 +164,32 @@ services:
       - NODE_ENV=development
       - PORT=3006
       - MONGO_URI=mongodb://mongodb:27017/email_service
+      - KAFKA_BROKER=kafka:9092
     depends_on:
       - mongodb
     networks:
       - microservices-network
     restart: unless-stopped
+
+  user-service:
+    build: 
+      context: .
+      dockerfile: ./services/user-service/Dockerfile
+    environment:
+      - NODE_ENV=development
+      - PORT=3007
+      - MONGO_URI=mongodb://mongodb:27017/user_service
+      - KAFKA_BROKER=kafka:9092
+    depends_on:
+      - mongodb
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  notification:
+    build: ./services/notification
+    
+
 
 volumes:
   mongodb_data:

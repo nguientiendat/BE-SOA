@@ -21,8 +21,7 @@ async function runComsumer(req, res) {
     eachMessage: async ({ topic, partition, message }) => {
       try {
         const data = JSON.parse(message.value.toString());
-        // console.log("DATA NHAN DUOC", data);
-        // console.log("Nhận được Message mới: ", message);
+
         for (const item of data.items) {
           const productId = item.productId;
           console.log("⚠️⚠️⚠️⚠️PRODUCTID: ", productId);
@@ -38,10 +37,6 @@ async function runComsumer(req, res) {
             }
           );
           if (update.matchedCount === 0) {
-            console.log(
-              `❌ KHÔNG TÌM THẤY: Không tìm thấy SP ${productId} để trừ kho.`
-            );
-          } else if (update.modifiedCount === 0) {
             console.log(
               `ℹ️ KHÔNG THAY ĐỔI: Đã tìm thấy SP ${productId} nhưng quantity không đổi.`
             );

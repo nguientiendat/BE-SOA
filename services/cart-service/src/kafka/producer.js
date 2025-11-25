@@ -6,13 +6,19 @@ const kafka = new Kafka({
 
 const producer = kafka.producer();
 
-async function sendCartUpdatedEvent(product) {
+async function connectKafka() {
   try {
     await producer.connect();
     console.log("📤 [KAFKA] Producer connected successfully");
+  } catch (error) {
+    console.error("❌ [KAFKA] Failed to send message:", error.message);
+  }
+}
 
+async function sendCartUpdatedEvent(product) {
+  try {
     await producer.send({
-      topic: "adToCart-successful",
+      topic: "CART-ADDED",
       messages: [
         {
           key: product._id.toString(),
@@ -29,3 +35,4 @@ async function sendCartUpdatedEvent(product) {
     console.error("❌ [KAFKA] Failed to send message:", error.message);
   }
 }
+module.exports = { sendCartUpdatedEvent, connectKafka };
