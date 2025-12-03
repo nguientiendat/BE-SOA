@@ -21,6 +21,7 @@ async function connectProducer() {
 
 async function createdLinkCheckoutEvent(linkCheckout) {
   try {
+    console.log("#################################################### Link CheckOUt Event###########################################")
     await producer.send({
       topic: "LINK-CHECKOUT-EVENT",
       messages: [

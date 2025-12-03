@@ -8,7 +8,7 @@ const createOrder = async (req, res) => {
     const token = req.headers.authorization;
     // console.log("Token:", token);
 
-    const cartData = await axios.get(`http://localhost:3003/getcart`, {
+    const cartData = await axios.get(`http://cart-service:3003/getcart`, {
       headers: { Authorization: token },
     });
 

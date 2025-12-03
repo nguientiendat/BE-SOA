@@ -1,11 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
+// const cors = require("cors");
 const productRouter = require("./routes/product.router");
 require("dotenv").config();
+const runConsumer = require("./kafka/consumer");
 
 const app = express();
-app.use(cors());
+// app.use(cors());
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -56,4 +57,5 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {
   console.log(`Product Service is running on port ${PORT}`);
+  runConsumer();
 });

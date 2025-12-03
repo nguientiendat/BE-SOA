@@ -18,7 +18,7 @@ const paymentCancelled = async (req, res) => {
     const data = req.body.data;
     if (!data || !data.orderCode || !data.desc) {
       console.warn("Dữ liệu webhook không đầy đủ.");
-      return res.status(400).json({ message: "Dữ liệu webhook không đầy đủ" });
+      return res.status(200).json({ message: "Dữ liệu webhook không đầy đủ" });
     }
 
     const orderCodeNum = data.orderCode;
@@ -44,7 +44,7 @@ const paymentCancelled = async (req, res) => {
         `Không tìm thấy document nào để cập nhật với orderCode: ${orderCodeNum}`
       );
       // Trả về lỗi 404 (Không tìm thấy)
-      return res.status(404).json({ message: "Không tìm thấy giao dịch" });
+      return res.status(200).json({ message: "Không tìm thấy giao dịch" });
     }
 
     console.log(
