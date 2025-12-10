@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"year":{"$numberInt":"1"},"month":{"$numberInt":"1"}},"name":"year_1_month_1","unique":true}],"uuid":"7d333607e0064e929e429764210982cf","collectionName":"monthlystats","type":"collection"}

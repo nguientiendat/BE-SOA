@@ -185,6 +185,18 @@ services:
     networks:
       - microservices-network
     restart: unless-stopped
+  analytics-service:
+    build: 
+      context: .
+      dockerfile: ./services/analytics-service/Dockerfile
+    environment:
+      - NODE_ENV=development
+      - PORT=3011
+      - KAFKA_BROKER=kafka:9092
+      - MONGO_URI=mongodb://mongodb:27017/analytics_service
+    networks:
+      - microservices-network
+    restart: unless-stopped
 
   notification:
     build: ./services/notification

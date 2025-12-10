@@ -55,14 +55,14 @@ async function runConsumer(req, res) {
         await newPayment.save();
         console.log(`Them vao DB thanh cong`);
 
-        const YOUR_DOMAIN = "http://localhost:3004"; // Thay bằng domain của bạn
+        const YOUR_DOMAIN = "https://nguientiendat.online"; // Thay bằng domain của bạn
         const paymentData = {
           orderCode: order.orderCode,
-          amount: order.amount,
+          amount: Math.round(order.amount),
           description: `Test PayOS`,
           // items: order.items, // Lấy item từ message nếu có
-          returnUrl: `${YOUR_DOMAIN}/payment-success`,
-          cancelUrl: `${YOUR_DOMAIN}/payment-cancelled`,
+          returnUrl: `${YOUR_DOMAIN}`,
+          cancelUrl: `${YOUR_DOMAIN}`,
         };
         console.log(
           `[PAYOS] Creating payment link for order: ${order.orderCode}`
