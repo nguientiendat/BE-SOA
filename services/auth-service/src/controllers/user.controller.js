@@ -175,9 +175,34 @@ const getProfile = async (req, res) => {
     );
   }
 };
+// Lay danh sach tai khoan cho admin
+
+const getAllUsers = async (req, res) => {
+  try {
+    const role = req.user.role;
+    if(role !== 'ADMIN'){
+      return errorResponse(res, 403, "Bạn không có quyền truy cập tài nguyên này");
+    }
+    await User.find({}).select("-password").then((users) => {
+      return successResponse(res, 200, "Lấy danh sách người dùng thành công", {
+        users: users,
+      });
+    });
+  } catch (error) {
+    console.error("Get all users error:", error);
+    return errorResponse(
+      res,
+      500,
+      "Lỗi server khi lấy danh sách người dùng",
+      error.message
+    );
+  }
+}
+
 
 module.exports = {
   register,
   login,
   getProfile,
+  getAllUsers
 };

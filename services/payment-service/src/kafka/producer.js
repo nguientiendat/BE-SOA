@@ -35,7 +35,7 @@ async function createdLinkCheckoutEvent(linkCheckout) {
       ],
     });
   } catch (error) {
-    console.error("❌ [KAFKA] Failed to send message:", error.message);
+    console.error("❌ [KAFKA] Failed to send message (1):", error.message);
   }
 }
 
@@ -62,7 +62,7 @@ async function sendPaymentSuccessfulEvent(payment) {
     });
     console.log("Gui message thanh cong !!!!");
   } catch (error) {
-    console.error("❌ [KAFKA] Failed to send message:", error.message);
+    console.error("❌ [KAFKA] Failed to send message (2):", error.message);
   }
 }
 module.exports = {

@@ -8,6 +8,8 @@ const {
   restoreProduct,
   editProduct,
 } = require("../controllers/product.controller");
+const { uploadDescriptionImage } = require("../controllers/upload.controller.js");
+console.log("Check Import:", uploadDescriptionImage);
 const { authMiddleware } = require("../middleware/auth.middleware");
 const {
   uploadToCloudinary,
@@ -46,5 +48,9 @@ router.post(
 );
 router.post("/deleteproduct", authMiddleware, deleteProduct);
 router.post("/editproduct", authMiddleware, editProduct);
-
+router.post(
+  "/upload-description-image", 
+  upload.single("image"), // Key form-data phải là "image"
+  uploadDescriptionImage
+);
 module.exports = router;

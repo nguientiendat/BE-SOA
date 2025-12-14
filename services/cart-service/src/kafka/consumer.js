@@ -2,7 +2,7 @@ const { Kafka } = require("kafkajs");
 const Cart = require("../models/cart.model");
 const kafka = new Kafka({
   clientId: "cart-service",
-  brokers: [process.env.KAFKA_BROKER || "localhost:9094"],
+  brokers: [process.env.KAFKA_BROKER || "kafka:9092"],
 });
 
 const consumer = kafka.consumer({ groupId: "cart-service-group" });

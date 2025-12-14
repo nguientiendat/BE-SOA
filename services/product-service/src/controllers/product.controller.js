@@ -17,6 +17,7 @@ const addProduct = async (req, res) => {
       sold_count,
       discount,
       days_valid,
+      description,
     } = req.body;
     if (
       !name ||
@@ -43,6 +44,7 @@ const addProduct = async (req, res) => {
       days_valid,
       imageUrl,
       imagePublicId,
+      description
     }).save();
     console.log("New product added:", newProduct);
     return successResponse(res, 201, "Thêm sản phẩm thành công", newProduct);

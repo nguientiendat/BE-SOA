@@ -40,27 +40,53 @@ const runConsumer = async () => {
           console.log(`✅ Người dùng mới đã được lưu: ${dataUser.email}`);
         }
 
-        if (topic === "PAYMENT-SUCCESSFUL-EVENT") {
-          // 🧩 Cập nhật giỏ hàng hoặc danh sách mua hàng
-          await User.findOneAndUpdate(
-            { email: dataUser.email },
-            {
-              $push: {
-                purcharsedProducts: {
-                  $each: dataUser.items.map((item) => ({
-                    productId: item.productId,
-                    quantity: item.quantity,
-                    price: item.price,
-                  })),
-                },
-                totalSpent: dataUser.amount,
-              },
-            },
-            { new: true }
-          );
+        // if (topic === "PAYMENT-SUCCESSFUL-EVENT") {
+        //   // 🧩 Cập nhật giỏ hàng hoặc danh sách mua hàng
+        //   await User.findOneAndUpdate(
+        //     { email: dataUser.email },
+        //     {
+        //       $push: {
+        //         purcharsedProducts: {
+        //           $each: dataUser.items.map((item) => ({
+        //             productId: item.productId,
+        //             quantity: item.quantity,
+        //             price: item.price,
+        //           })),
+        //         },
+        //         totalSpent: dataUser.amount,
+        //       },
+        //     },
+        //     { new: true }
+        //   );
 
-          console.log(`💰 Cập nhật đơn hàng thành công cho ${dataUser.email}`);
-        }
+        //   console.log(`💰 Cập nhật đơn hàng thành công cho ${dataUser.email}`);
+        // }
+        if (topic === "PAYMENT-SUCCESSFUL-EVENT") {
+  // 🧩 Cập nhật giỏ hàng hoặc danh sách mua hàng
+  await User.findOneAndUpdate(
+    { email: dataUser.email },
+    {
+      // 1. Dùng $push để thêm sản phẩm vào mảng
+      $push: {
+        purcharsedProducts: {
+          $each: dataUser.items.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            price: item.price,
+            purchasedAt: new Date() // (Optional) Nên thêm ngày mua để dễ tracking
+          })),
+        },
+      },
+      // 2. Dùng $inc để cộng dồn số tiền (Tách riêng ra khỏi $push)
+      $inc: {
+        totalSpent: dataUser.amount,
+      },
+    },
+    { new: true }
+  );
+
+  console.log(`💰 Cập nhật đơn hàng thành công cho ${dataUser.email}`);
+}
       } catch (error) {
         console.error("❌ Lỗi khi xử lý tin nhắn từ Kafka:", error);
       }
