@@ -21,6 +21,8 @@ const createOrder = async (req, res) => {
       return total + item.price * item.quantity;
     }, 0);
     const orderCode = Date.now();
+    console.log("_id la ❌❌❌❌❌❌❌❌❌: ", cartData.data._id);
+
     const newOrder = await new Order({
       email: req.user.email,
       items: cartData.data.items,
@@ -32,7 +34,6 @@ const createOrder = async (req, res) => {
     });
     const saveDb = await newOrder.save();
     console.log("New order created:", newOrder);
-
     const eventData = saveDb.toObject();
     eventData.orderCode = orderCode;
     sendOrderCreatedEvent(eventData);

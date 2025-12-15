@@ -46,7 +46,7 @@ async function runConsumer(req, res) {
           paymentLinkId: null,
 
           items: order.items.map((item) => ({
-            productId: item._id,
+            productId: item.productId,
             quantity: item.quantity,
             price: item.price,
           })),

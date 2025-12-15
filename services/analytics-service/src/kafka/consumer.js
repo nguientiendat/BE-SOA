@@ -5,7 +5,7 @@ const ProductStat = require("../models/ProductStats.model");
 
 const kafka = new Kafka({
   clientId: "analytics-service",
-  brokers: [process.env.KAFKA_BROKER || "localhost:9094"],
+  brokers: [process.env.KAFKA_BROKER || "kafka:9092"],
 });
 
 const consumer = kafka.consumer({ groupId: "analytics-group" });

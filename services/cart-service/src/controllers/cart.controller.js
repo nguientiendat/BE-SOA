@@ -2,6 +2,8 @@
 const Cart = require("../models/cart.model");
 const axios = require("axios");
 const { sendCartUpdatedEvent } = require("../kafka/producer");
+
+
 const createCart = async (userId) => {
   try {
     const newCart = new Cart({

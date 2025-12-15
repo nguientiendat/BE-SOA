@@ -1,8 +1,6 @@
 // Order model - to be implemented
 const mongoose = require("mongoose");
-// const {
-//   checkout,
-// } = require("../../../product-service/src/routes/product.router");
+
 
 const orderItems = new mongoose.Schema({
   _id: {
@@ -18,7 +16,13 @@ const orderItems = new mongoose.Schema({
     type: Number,
     required: true,
   },
-});
+  productId:{
+    type: String,
+    required: true,
+  }
+}
+
+);
 const orderSchema = new mongoose.Schema({
   email: {
     type: String,

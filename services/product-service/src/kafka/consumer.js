@@ -24,10 +24,22 @@ async function runComsumer(req, res) {
 
         for (const item of data.items) {
           const productId = item.productId;
-          console.log("⚠️⚠️⚠️⚠️PRODUCTID: ", productId);
-          console.log("⚠️ quantity: ", item.quantity);
-          const product = Product.findById(productId);
-          //   console.log(product);
+          console.log(`Processing Item: ${productId} - Qty: ${item.quantity}`);
+
+          // --- BƯỚC 1: KIỂM TRA TỒN TẠI ---
+          // Thêm await như đã bàn trước đó
+          const product = await Product.findById(productId); 
+
+          if (!product) {
+            // Nếu null -> Dừng ngay vòng lặp cho item này
+            console.error(`❌ LỖI NGHIÊM TRỌNG: Product ID ${productId} không tồn tại trong Database!`);
+            console.log("--> Khả năng cao là Database Product Service khác với Database tạo ra Order.");
+            continue; // Bỏ qua item này, chuyển sang item tiếp theo
+          }
+
+          console.log(`ℹ️ Tồn kho hiện tại: ${product.quantity}`);
+
+          // --- BƯỚC 2: TRỪ KHO (Atomic Update) ---
           const update = await Product.updateOne(
             { _id: productId, quantity: { $gte: item.quantity } },
             {
@@ -36,16 +48,20 @@ async function runComsumer(req, res) {
               },
             }
           );
+
+          // --- BƯỚC 3: XỬ LÝ KẾT QUẢ UPDATE ---
           if (update.matchedCount === 0) {
+            // Vì đã check tồn tại ở Bước 1, nên nếu vào đây chắc chắn là do thiếu hàng
             console.log(
-              `ℹ️ KHÔNG THAY ĐỔI: Đã tìm thấy SP ${productId} nhưng quantity không đổi.`
+              `⚠️ HẾT HÀNG: Sản phẩm ${productId} tồn tại nhưng không đủ số lượng (Cần: ${item.quantity}, Có: ${product.quantity})`
             );
+            // Ở đây có thể bắn 1 event "ORDER_FAILED" ngược lại Kafka nếu cần
           } else {
             console.log(`✅ THÀNH CÔNG: Đã trừ kho cho SP ${productId}.`);
           }
         }
       } catch (error) {
-        console.log(error);
+        console.error("Lỗi xử lý message:", error);
       }
     },
   });
